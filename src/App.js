@@ -1,5 +1,5 @@
 // App.js
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
@@ -12,6 +12,7 @@ const App = () => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const userListRef = useRef(null);
 
   useEffect(() => {
     axios.get('https://602e7c2c4410730017c50b9d.mockapi.io/users')
@@ -28,6 +29,7 @@ const App = () => {
 
   const handleUserClick = (user) => {
     setSelectedUser(user);
+    userListRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -38,7 +40,7 @@ const App = () => {
           <Route path="/" element={
             <div className="container py-4">
               <div className="row">
-                <div className="col-md-6">
+                <div className="col-md-6" ref={userListRef}>
                   <UserList users={users} handleUserClick={handleUserClick} loading={loading} />
                 </div>
                 <div className="col-md-6">
