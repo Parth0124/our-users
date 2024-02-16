@@ -11,16 +11,6 @@ const UserList = ({ users, handleUserClick, loading }) => {
     );
   }
 
-  if (!users || !users.length) {
-    return (
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <Spinner />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="row">
       {users.map(user => (

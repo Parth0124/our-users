@@ -1,4 +1,3 @@
-// App.js
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -43,13 +42,11 @@ const App = () => {
                 <div className="col-md-6" ref={userListRef}>
                   <UserList users={users} handleUserClick={handleUserClick} loading={loading} />
                 </div>
-                <div className="col-md-6">
-                  {loading ? (
-                    <p>Loading...</p>
-                  ) : (
+                {!loading && (
+                  <div className="col-md-6">
                     <UserDetails selectedUser={selectedUser} />
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           } />
