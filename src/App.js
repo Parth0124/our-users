@@ -1,23 +1,12 @@
-import React, { useState, useEffect } from 'react';
+// App.js
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { CircularProgress, Container, Grid } from '@mui/material'; // Assuming you're using Material UI
-import UserList from './componenets/UserList'; // Assuming UserList component is in UserList.js
-
-const UserDetails = ({ user }) => (
-  <div>
-    <h2>User Details</h2>
-    {user ? (
-      <div>
-        <img src={user.avatar} alt={user.name} />
-        <p>Name: {user.name}</p>
-        <p>Email: {user.email}</p>
-        <p>Location: {user.location}</p>
-      </div>
-    ) : (
-      <p>No user selected</p>
-    )}
-  </div>
-);
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import UserList from './components/UserLists';
+import UserDetails from './components/UserDetails';
+import Navbar from './layouts/Navbar';
+import About from './pages/AboutPage';
 
 const App = () => {
   const [users, setUsers] = useState([]);
@@ -25,41 +14,47 @@ const App = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('https://602e7c2c4410730017c50b9d.mockapi.io/users');
-        setUsers(response.data);
+    axios.get('https://602e7c2c4410730017c50b9d.mockapi.io/users')
+      .then(response => {
+        const sortedUsers = response.data.sort((a, b) => a.profile.username.localeCompare(b.profile.username));
+        setUsers(sortedUsers);
         setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
+      })
+      .catch(error => {
+        console.error('Error fetching users:', error);
         setLoading(false);
-      }
-    };
-
-    fetchData();
+      });
   }, []);
 
-  const handleSelectUser = (user) => {
+  const handleUserClick = (user) => {
     setSelectedUser(user);
   };
 
   return (
-    <Container>
-      {loading ? (
-        <Grid container justifyContent="center" alignItems="center" style={{ height: '100vh' }}>
-          <CircularProgress /> {/* Loader while fetching data */}
-        </Grid>
-      ) : (
-        <Grid container spacing={3}>
-          <Grid item xs={4}>
-            <UserList users={users} onSelectUser={handleSelectUser} />
-          </Grid>
-          <Grid item xs={8}>
-            <UserDetails user={selectedUser} />
-          </Grid>
-        </Grid>
-      )}
-    </Container>
+    <Router>
+      <div>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={
+            <div className="container py-4">
+              <div className="row">
+                <div className="col-md-6">
+                  <UserList users={users} handleUserClick={handleUserClick} loading={loading} />
+                </div>
+                <div className="col-md-6">
+                  {loading ? (
+                    <p>Loading...</p>
+                  ) : (
+                    <UserDetails selectedUser={selectedUser} />
+                  )}
+                </div>
+              </div>
+            </div>
+          } />
+          <Route path="/about" element={<About />} />
+        </Routes>
+      </div>
+    </Router>
   );
 };
 
